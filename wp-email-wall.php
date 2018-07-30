@@ -9,3 +9,29 @@ Author URI:   https://kojiflowers.com
 License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 */
+
+include('helpers/settings.php');
+
+
+function wp_email_wall_check_email( $errors, $sanitized_user_login, $user_email ) {
+
+    // @todo get array of banned email domains from settings
+    $banned_emails = [];
+
+    foreach($banned_emails as $key => $banned_email){
+        if (strpos($user_email, $banned_email) === true) {
+            $errors->add( 'zipcode_error', __( '<strong>ERROR</strong>: Invalid Email.', 'my_textdomain' ) );
+        }
+    }
+
+
+    return $errors;
+}
+
+
+/**
+ * Actions
+ */
+
+// add registration error filter that checks user emails against banned domain list
+add_filter( 'registration_errors', 'wp_email_wall_check_email', 10, 3 );
