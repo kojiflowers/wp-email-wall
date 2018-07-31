@@ -15,15 +15,18 @@ include('helpers/settings.php');
 
 function wp_email_wall_check_email( $errors, $sanitized_user_login, $user_email ) {
 
-    // @todo get array of banned email domains from settings
-    $banned_emails = [];
+    $options = get_option( 'blocked_emails' );
 
+    // convert list of email domains to array
+    $banned_emails = explode(',',$options['blocked_email'] );
+
+    // loop banned email array and check domains against current email
     foreach($banned_emails as $key => $banned_email){
-        if (strpos($user_email, $banned_email) === true) {
-            $errors->add( 'zipcode_error', __( '<strong>ERROR</strong>: Invalid Email.', 'my_textdomain' ) );
+        if (strpos($user_email, trim($banned_email)) !== false) {
+            $errors->add( 'email_wall_error', __( '<strong>ERROR</strong>: Invalid Email', 'my_textdomain' ) );
+            return $errors;
         }
     }
-
 
     return $errors;
 }
